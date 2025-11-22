@@ -14,7 +14,7 @@ NC='\033[0m' # No Color
 
 # Header
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   PVE Phoenix Installer for Proxmox   ║${NC}"
+echo -e "${BLUE}║   PVE Phoenix Installer for Proxmox    ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -35,8 +35,16 @@ echo ""
 
 # Get VM ID
 echo -e "${YELLOW}Step 1: Which VM should be monitored?${NC}"
-read -p "Enter VM ID [default: 444]: " VMID
-VMID=${VMID:-444}
+if [[ -t 0 ]]; then
+    # Interactive mode (stdin is a terminal)
+    read -p "Enter VM ID [default: 444]: " VMID
+    VMID=${VMID:-444}
+else
+    # Non-interactive mode (piped from curl)
+    # Use VMID env var or default to 444
+    VMID=${VMID:-444}
+    echo "Using VM ID: $VMID (set VMID env var to override)"
+fi
 
 # Validate VM exists
 echo -n "Checking if VM $VMID exists... "
@@ -60,38 +68,54 @@ echo ""
 
 # Get rate limits
 echo -e "${YELLOW}Step 2: Configure restart limits (prevents restart loops)${NC}"
-while true; do
-    read -p "Max restarts per hour [default: 5]: " HOURLY_LIMIT
-    HOURLY_LIMIT=${HOURLY_LIMIT:-5}
-    if [[ "$HOURLY_LIMIT" =~ ^[0-9]+$ ]] && [[ "$HOURLY_LIMIT" -gt 0 ]]; then
-        break
-    else
-        echo -e "${RED}Error: Please enter a positive number${NC}"
-    fi
-done
+if [[ -t 0 ]]; then
+    # Interactive mode
+    while true; do
+        read -p "Max restarts per hour [default: 5]: " HOURLY_LIMIT
+        HOURLY_LIMIT=${HOURLY_LIMIT:-5}
+        if [[ "$HOURLY_LIMIT" =~ ^[0-9]+$ ]] && [[ "$HOURLY_LIMIT" -gt 0 ]]; then
+            break
+        else
+            echo -e "${RED}Error: Please enter a positive number${NC}"
+        fi
+    done
 
-while true; do
-    read -p "Max restarts per day [default: 20]: " DAILY_LIMIT
+    while true; do
+        read -p "Max restarts per day [default: 20]: " DAILY_LIMIT
+        DAILY_LIMIT=${DAILY_LIMIT:-20}
+        if [[ "$DAILY_LIMIT" =~ ^[0-9]+$ ]] && [[ "$DAILY_LIMIT" -gt 0 ]]; then
+            break
+        else
+            echo -e "${RED}Error: Please enter a positive number${NC}"
+        fi
+    done
+else
+    # Non-interactive mode
+    HOURLY_LIMIT=${HOURLY_LIMIT:-5}
     DAILY_LIMIT=${DAILY_LIMIT:-20}
-    if [[ "$DAILY_LIMIT" =~ ^[0-9]+$ ]] && [[ "$DAILY_LIMIT" -gt 0 ]]; then
-        break
-    else
-        echo -e "${RED}Error: Please enter a positive number${NC}"
-    fi
-done
+    echo "Using hourly limit: $HOURLY_LIMIT (set HOURLY_LIMIT env var to override)"
+    echo "Using daily limit: $DAILY_LIMIT (set DAILY_LIMIT env var to override)"
+fi
 echo ""
 
 # Get check interval
 echo -e "${YELLOW}Step 3: Monitoring settings${NC}"
-while true; do
-    read -p "Check VM status every X seconds [default: 30]: " CHECK_INTERVAL
+if [[ -t 0 ]]; then
+    # Interactive mode
+    while true; do
+        read -p "Check VM status every X seconds [default: 30]: " CHECK_INTERVAL
+        CHECK_INTERVAL=${CHECK_INTERVAL:-30}
+        if [[ "$CHECK_INTERVAL" =~ ^[0-9]+$ ]] && [[ "$CHECK_INTERVAL" -gt 0 ]]; then
+            break
+        else
+            echo -e "${RED}Error: Please enter a positive number${NC}"
+        fi
+    done
+else
+    # Non-interactive mode
     CHECK_INTERVAL=${CHECK_INTERVAL:-30}
-    if [[ "$CHECK_INTERVAL" =~ ^[0-9]+$ ]] && [[ "$CHECK_INTERVAL" -gt 0 ]]; then
-        break
-    else
-        echo -e "${RED}Error: Please enter a positive number${NC}"
-    fi
-done
+    echo "Using check interval: $CHECK_INTERVAL seconds (set CHECK_INTERVAL env var to override)"
+fi
 echo ""
 
 # Confirm settings
@@ -104,11 +128,22 @@ echo -e "  Check Interval: ${GREEN}$CHECK_INTERVAL${NC} seconds"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
-read -p "Proceed with installation? [Y/n]: " CONFIRM
-CONFIRM=${CONFIRM:-Y}
-if [[ ! "$CONFIRM" =~ ^[Yy]([Ee][Ss])?$ ]]; then
-    echo "Installation cancelled."
-    exit 0
+if [[ -t 0 ]]; then
+    # Interactive mode - ask for confirmation
+    read -p "Proceed with installation? [Y/n]: " CONFIRM
+    CONFIRM=${CONFIRM:-Y}
+    if [[ ! "$CONFIRM" =~ ^[Yy]([Ee][Ss])?$ ]]; then
+        echo "Installation cancelled."
+        exit 0
+    fi
+else
+    # Non-interactive mode - auto-proceed (set SKIP_CONFIRM=0 to abort)
+    SKIP_CONFIRM=${SKIP_CONFIRM:-1}
+    if [[ "$SKIP_CONFIRM" != "1" ]]; then
+        echo "Installation cancelled (SKIP_CONFIRM not set to 1)."
+        exit 0
+    fi
+    echo "Auto-proceeding with installation (non-interactive mode)..."
 fi
 echo ""
 

@@ -19,13 +19,20 @@ PVE Phoenix is a lightweight systemd service that monitors your Proxmox VMs and 
 
 ## Quick Installation
 
-**One-liner installation (downloads and runs interactive installer):**
+**One-liner installation (interactive mode with prompts):**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Damcore/pve-phoenix/main/install.sh | sudo bash
 ```
 
-Or clone and run locally:
+**Non-interactive installation with custom settings:**
+
+```bash
+VMID=101 HOURLY_LIMIT=5 DAILY_LIMIT=20 CHECK_INTERVAL=30 \
+  curl -fsSL https://raw.githubusercontent.com/Damcore/pve-phoenix/main/install.sh | sudo bash
+```
+
+**Or clone and run locally:**
 
 ```bash
 git clone https://github.com/Damcore/pve-phoenix.git
@@ -33,7 +40,14 @@ cd pve-phoenix
 sudo bash install.sh
 ```
 
-The installer will verify Proxmox, prompt for VM ID (with validation), configure limits, and start the service automatically.
+The installer will verify Proxmox, validate VM exists, configure limits, and start the service automatically.
+
+**Environment Variables (non-interactive mode):**
+- `VMID` - VM ID to monitor (default: 444)
+- `HOURLY_LIMIT` - Max restarts per hour (default: 5)
+- `DAILY_LIMIT` - Max restarts per day (default: 20)
+- `CHECK_INTERVAL` - Seconds between checks (default: 30)
+- `SKIP_CONFIRM` - Set to 0 to prevent auto-installation (default: 1)
 
 ---
 

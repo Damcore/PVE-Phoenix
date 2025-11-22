@@ -1,0 +1,14 @@
+[Unit]
+Description=Proxmox VM 444 Watchdog
+After=network.target pve-cluster.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/vm-watchdog.sh
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,46 @@
+# PVE Phoenix - Git Ignore
+
+# Configuration files (keep only .sample files)
+*.conf
+!*.conf.sample
+
+# State files
+*.state
+
+# Log files
+*.log
+
+# AI Agent directories and files
+.claude/
+.gemini/
+.cursor/
+.copilot/
+.windsurf/
+.aider/
+.ai/
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+CURSOR.md
+COPILOT.md
+WINDSURF.md
+AIDER.md
+.aiconfig
+.cursorrules
+.github/copilot-instructions.md
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.bak
+*.old
+
+# Test files (if you add tests later)
+test-*.sh

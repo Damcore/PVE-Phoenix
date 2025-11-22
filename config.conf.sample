@@ -1,0 +1,17 @@
+# VM Watchdog Configuration
+# This file is auto-generated and updated by the watchdog script
+#
+# To manually reset and re-enable after daily limit:
+# 1. Set ENABLED=true
+# 2. Optionally reset DAILY_RESTARTS=0 if you want to reset the counter
+# 3. Save the file
+# 4. Restart the service: sudo systemctl restart vm-watchdog
+#
+# NOTE: Configuration is only loaded at startup. Service restart is required
+# for manual changes to take effect.
+
+HOURLY_RESTARTS=0
+DAILY_RESTARTS=0
+LAST_HOUR_RESET=0
+LAST_DAY_RESET=1970-01-01
+ENABLED=true

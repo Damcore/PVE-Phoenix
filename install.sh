@@ -242,10 +242,9 @@ if systemctl is-active --quiet vm-watchdog; then
     echo -e "  Pause:  ${BLUE}touch /etc/vm-watchdog/pause${NC}"
     echo -e "  Resume: ${BLUE}rm /etc/vm-watchdog/pause${NC}"
     echo ""
-    echo -e "${YELLOW}Change VM or Add More:${NC}"
-    echo -e "  Change VM ID:      Edit ${BLUE}/usr/local/bin/vm-watchdog.sh${NC} (line 6: VMID=$VMID)"
-    echo -e "  Monitor more VMs:  Run installer again with different VMID"
-    echo -e "  Example:           ${BLUE}VMID=101 curl -fsSL ... | sudo bash${NC}"
+    echo -e "${YELLOW}Change Monitored VM:${NC}"
+    echo -e "  1. Edit ${BLUE}/usr/local/bin/vm-watchdog.sh${NC} (line 6: VMID=$VMID)"
+    echo -e "  2. Run ${BLUE}systemctl restart vm-watchdog${NC}"
     echo ""
 else
     echo -e "${RED}[FAIL] Service failed to start${NC}"

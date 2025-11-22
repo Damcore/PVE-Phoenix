@@ -200,10 +200,19 @@ echo -e "${GREEN}[OK]${NC} Config directory created"
 
 # Install logrotate configuration
 if [[ -f "$SCRIPT_DIR/vm-watchdog.logrotate" ]]; then
+    # Local file exists (cloned repo)
     cp "$SCRIPT_DIR/vm-watchdog.logrotate" /etc/logrotate.d/vm-watchdog
     echo -e "${GREEN}[OK]${NC} Log rotation configured"
 else
-    echo -e "${YELLOW}[WARN]${NC} Logrotate config not found, skipping log rotation setup"
+    # Download from GitHub (curl | bash installation)
+    echo -n "Downloading logrotate config from GitHub... "
+    if curl -fsSL https://raw.githubusercontent.com/Damcore/pve-phoenix/main/vm-watchdog.logrotate \
+        -o /etc/logrotate.d/vm-watchdog 2>/dev/null; then
+        echo -e "${GREEN}[OK]${NC}"
+    else
+        echo -e "${YELLOW}[WARN]${NC}"
+        echo -e "${YELLOW}[WARN]${NC} Failed to download logrotate config, logs won't auto-rotate"
+    fi
 fi
 
 # Reload systemd

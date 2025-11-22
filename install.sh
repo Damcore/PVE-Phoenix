@@ -218,7 +218,7 @@ systemctl daemon-reload
 echo -e "${GREEN}[OK]${NC} Systemd reloaded"
 
 # Enable service
-systemctl enable vm-watchdog
+systemctl enable vm-watchdog &>/dev/null
 echo -e "${GREEN}[OK]${NC} Service enabled (will start on boot)"
 
 # Restart service (starts if not running, restarts if already running)
